@@ -1,1 +1,1 @@
-# communicator
+# study-app
