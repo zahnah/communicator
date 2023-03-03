@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/zahnah/study-app/pkg/config"
+	"github.com/zahnah/study-app/pkg/models"
 	"github.com/zahnah/study-app/pkg/render"
 	"net/http"
 )
@@ -24,10 +25,15 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, "home.page.gohtml")
+	render.Template(writer, "home.page.gohtml", &models.TemplateData{})
 }
 
 // About is the about page handler
 func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, "about.page.gohtml")
+	stringMap := make(map[string]string)
+	stringMap["test"] = "Hello, again"
+
+	render.Template(writer, "about.page.gohtml", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }

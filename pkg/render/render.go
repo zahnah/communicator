@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/zahnah/study-app/pkg/config"
+	"github.com/zahnah/study-app/pkg/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,7 +19,11 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
-func Template(writer http.ResponseWriter, tmpl string) {
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
+func Template(writer http.ResponseWriter, tmpl string, td *models.TemplateData) {
 
 	tc := app.TemplateCache
 	if !app.UseCache {
@@ -32,7 +37,7 @@ func Template(writer http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	_ = parseTemplate.Execute(buf, nil)
+	_ = parseTemplate.Execute(buf, AddDefaultData(td))
 
 	_, err := buf.WriteTo(writer)
 
