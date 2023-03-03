@@ -3,6 +3,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/zahnah/study-app/pkg/config"
 	"html/template"
 	"log"
 	"net/http"
@@ -11,23 +12,29 @@ import (
 
 var functions = template.FuncMap{}
 
+var app *config.AppConfig
+
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
 func Template(writer http.ResponseWriter, tmpl string) {
 
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
+	tc := app.TemplateCache
+	if !app.UseCache {
+		tc, _ = CreateTemplateCache()
 	}
 
 	parseTemplate, ok := tc[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("Couldn't get template for the page")
 	}
 
 	buf := new(bytes.Buffer)
 
 	_ = parseTemplate.Execute(buf, nil)
 
-	_, err = buf.WriteTo(writer)
+	_, err := buf.WriteTo(writer)
 
 	if err != nil {
 		fmt.Println("error parsing template:", err)
