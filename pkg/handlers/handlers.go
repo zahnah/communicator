@@ -42,3 +42,19 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 		StringMap: stringMap,
 	})
 }
+
+func (m *Repository) Generals(writer http.ResponseWriter, r *http.Request) {
+	render.Template(writer, "generals.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) Contact(writer http.ResponseWriter, r *http.Request) {
+	render.Template(writer, "contact.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) Majors(writer http.ResponseWriter, r *http.Request) {
+	render.Template(writer, "majors.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) SearchAvailability(writer http.ResponseWriter, r *http.Request) {
+	render.Template(writer, "search-availability.page.gohtml", &models.TemplateData{})
+}
