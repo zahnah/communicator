@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.108.0">
-    <title>Carousel Template · Bootstrap v5.3</title>
+    <title>Reservation</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
 
@@ -124,24 +124,31 @@
 
         <div class="row">
             <div class="col col-md-6">
-                <h1 class="h1">Book</h1>
-                <form action="/static/public/book.html" method="post">
+                <h1 class="h1">Reservation</h1>
+                <form action="/static/public/reservation.html" method="post">
 
-                    <div class="row">
-                        <div class="col col-md-6">
-                            <div class="mb-3">
-                                <label for="startDate" class="form-label">Starting date</label>
-                                <input required type="date" class="form-control" id="startDate" aria-describedby="emailHelp">
-                                <div id="startDateHelp" class="form-text">Start date</div>
-                            </div>
-                        </div>
-                        <div class="col col-md-6">
-                            <div class="mb-3">
-                                <label for="andDate" class="form-label">Ending date</label>
-                                <input required type="date" class="form-control" id="andDate" aria-describedby="emailHelp">
-                                <div id="endDateHelp" class="form-text">End date</div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First name</label>
+                        <input required type="text" class="form-control" id="firstName" aria-describedby="emailHelp">
+                        <div id="firstNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last name</label>
+                        <input required type="text" class="form-control" id="lastName" aria-describedby="emailHelp">
+                        <div id="lastNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input required type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input required type="text" class="form-control" id="phone" aria-describedby="emailHelp">
+                        <div id="phoneHelp" class="form-text"></div>
                     </div>
 
                     <div class="mb-3">
