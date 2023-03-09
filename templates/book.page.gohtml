@@ -1,0 +1,45 @@
+{{template "base" .}}
+{{define "content"}}
+    <div class="container">
+
+        <div class="row">
+            <div class="col col-md-6">
+                <h1 class="h1">Reservation</h1>
+                <form action="/static/public/reservation.html" method="post">
+
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First name</label>
+                        <input required type="text" class="form-control" id="firstName" aria-describedby="emailHelp">
+                        <div id="firstNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last name</label>
+                        <input required type="text" class="form-control" id="lastName" aria-describedby="emailHelp">
+                        <div id="lastNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input required type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input required type="text" class="form-control" id="phone" aria-describedby="emailHelp">
+                        <div id="phoneHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Search availability</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- /END THE FEATURETTES -->
+
+    </div><!-- /.container -->
+{{end}}

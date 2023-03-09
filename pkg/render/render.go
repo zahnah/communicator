@@ -3,6 +3,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/justinas/nosurf"
 	"github.com/zahnah/study-app/pkg/config"
 	"github.com/zahnah/study-app/pkg/models"
 	"html/template"
@@ -19,11 +20,12 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
-func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
-func Template(writer http.ResponseWriter, tmpl string, td *models.TemplateData) {
+func Template(writer http.ResponseWriter, r http.Request, tmpl string, td *models.TemplateData) {
 
 	tc := app.TemplateCache
 	if !app.UseCache {
@@ -37,7 +39,7 @@ func Template(writer http.ResponseWriter, tmpl string, td *models.TemplateData) 
 
 	buf := new(bytes.Buffer)
 
-	_ = parseTemplate.Execute(buf, AddDefaultData(td))
+	_ = parseTemplate.Execute(buf, AddDefaultData(td, &r))
 
 	_, err := buf.WriteTo(writer)
 
