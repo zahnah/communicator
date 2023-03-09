@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/zahnah/study-app/pkg/config"
 	"github.com/zahnah/study-app/pkg/models"
 	"github.com/zahnah/study-app/pkg/render"
+	"log"
 	"net/http"
 )
 
@@ -64,4 +66,25 @@ func (m *Repository) PostAvailability(writer http.ResponseWriter, r *http.Reques
 	start := r.Form.Get("start")
 	end := r.Form.Get("end")
 	_, _ = writer.Write([]byte(start + " - " + end))
+}
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Request) {
+	resp := jsonResponse{
+		OK:      true,
+		Message: "Available!",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "     ")
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	_, _ = writer.Write(out)
 }
