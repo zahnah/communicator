@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"github.com/zahnah/study-app/pkg/config"
-	"github.com/zahnah/study-app/pkg/handlers"
-	"github.com/zahnah/study-app/pkg/render"
+	"github.com/zahnah/study-app/internal/config"
+	"github.com/zahnah/study-app/internal/handlers"
+	"github.com/zahnah/study-app/internal/render"
 	"log"
 	"net/http"
 	"time"

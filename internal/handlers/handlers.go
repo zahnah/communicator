@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/zahnah/study-app/pkg/config"
-	"github.com/zahnah/study-app/pkg/models"
-	"github.com/zahnah/study-app/pkg/render"
+	"github.com/zahnah/study-app/internal/config"
+	"github.com/zahnah/study-app/internal/models"
+	"github.com/zahnah/study-app/internal/render"
 	"log"
 	"net/http"
 )

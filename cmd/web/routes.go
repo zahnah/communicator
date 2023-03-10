@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/zahnah/study-app/pkg/config"
-	"github.com/zahnah/study-app/pkg/handlers"
+	"github.com/zahnah/study-app/internal/config"
+	"github.com/zahnah/study-app/internal/handlers"
 	"net/http"
 )
 
