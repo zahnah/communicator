@@ -129,6 +129,7 @@ func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Req
 			Data: data,
 		})
 	} else {
+		m.App.Session.Put(r.Context(), "flash", "Data stored successfully")
 		m.App.Session.Put(r.Context(), "reservation", reservation)
 		http.Redirect(writer, r, "/reservation-summary", http.StatusSeeOther)
 	}
@@ -139,13 +140,17 @@ func (m *Repository) ReservationSummary(writer http.ResponseWriter, r *http.Requ
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
 		log.Println("Can't get item from session")
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(writer, r, "/", http.StatusTemporaryRedirect)
 		return
+	} else {
+		m.App.Session.Remove(r.Context(), "reservation")
+
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+
+		render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
+			Data: data,
+		})
 	}
-
-	data := make(map[string]interface{})
-	data["reservation"] = reservation
-
-	render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
-		Data: data,
-	})
 }

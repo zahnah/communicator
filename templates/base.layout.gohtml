@@ -76,6 +76,22 @@
     </head>
     <body>
 
+    {{ with .Error}}
+        <div class="m-2 alert alert-danger" role="alert">
+            {{.}}
+        </div>
+    {{end}}
+    {{ with .Warning}}
+        <div class="m-2 alert alert-warning" role="alert">
+            {{.}}
+        </div>
+    {{end}}
+    {{ with .Flash}}
+        <div class="m-2 alert alert-success" role="alert">
+            {{.}}
+        </div>
+    {{end}}
+
     <header>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <div class="container-fluid">
