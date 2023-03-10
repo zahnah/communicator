@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/zahnah/study-app/internal/config"
+	"github.com/zahnah/study-app/internal/forms"
 	"github.com/zahnah/study-app/internal/models"
 	"github.com/zahnah/study-app/internal/render"
 	"log"
@@ -87,4 +88,47 @@ func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Re
 
 	writer.Header().Set("Content-Type", "application/json")
 	_, _ = writer.Write(out)
+}
+
+func (m *Repository) MakeReservation(writer http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	data["reservation"] = models.Reservation{}
+
+	render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+
+	form := forms.New(r.PostForm)
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	// form.Has("first_name", r)
+	form.Reqqired("first_name", "last_name", "email")
+	form.MinLength("first_name", 3, r)
+	form.IsEmail("email")
+
+	if !form.Valid() {
+
+	}
+
+	render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
+		Form: form,
+		Data: data,
+	})
 }

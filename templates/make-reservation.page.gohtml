@@ -1,0 +1,60 @@
+{{template "base" .}}
+{{define "content"}}
+    <div class="container">
+
+        <div class="row">
+            <div class="col col-md-6">
+                <h1 class="h1">Reservation</h1>
+
+                {{$res := index .Data "reservation"}}
+
+                <form action="/make-reservation" method="post">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First name</label>
+                        {{with .Form.Errors.Get "first_name"}}
+                        <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input value="{{$res.FirstName}}" name="first_name" type="text" class="{{with .Form.Errors.Get "first_name"}}is-invalid{{end}} form-control" id="firstName" aria-describedby="emailHelp">
+                        <div id="firstNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last name</label>
+                        {{with .Form.Errors.Get "last_name"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input value="{{$res.LastName}}" name="last_name" type="text" class="{{with .Form.Errors.Get "last_name"}}is-invalid{{end}} form-control" id="lastName" aria-describedby="emailHelp">
+                        <div id="lastNameHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        {{with .Form.Errors.Get "email"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input value="{{$res.Email}}" name="email"  type="email" class="{{with .Form.Errors.Get "email"}}is-invalid{{end}} form-control" id="email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        {{with .Form.Errors.Get "phone"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input value="{{$res.Phone}}" name="phone" type="text" class="{{with .Form.Errors.Get "phone"}}is-invalid{{end}} form-control" id="phone" aria-describedby="emailHelp">
+                        <div id="phoneHelp" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Search availability</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- /END THE FEATURETTES -->
+
+    </div><!-- /.container -->
+{{end}}
