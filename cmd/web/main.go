@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/handlers"
+	"github.com/zahnah/study-app/internal/models"
 	"github.com/zahnah/study-app/internal/render"
 	"log"
 	"net/http"
@@ -17,6 +19,8 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+
+	gob.Register(models.Reservation{})
 
 	app.InProduction = false
 

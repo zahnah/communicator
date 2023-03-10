@@ -119,16 +119,33 @@ func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Req
 	data["reservation"] = reservation
 
 	// form.Has("first_name", r)
-	form.Reqqired("first_name", "last_name", "email")
-	form.MinLength("first_name", 3, r)
+	form.Required("first_name", "last_name", "email")
+	form.MinLength("first_name", 3)
 	form.IsEmail("email")
 
 	if !form.Valid() {
-
+		render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+	} else {
+		m.App.Session.Put(r.Context(), "reservation", reservation)
+		http.Redirect(writer, r, "/reservation-summary", http.StatusSeeOther)
 	}
 
-	render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
-		Form: form,
+}
+
+func (m *Repository) ReservationSummary(writer http.ResponseWriter, r *http.Request) {
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		log.Println("Can't get item from session")
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
 		Data: data,
 	})
 }
