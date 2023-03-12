@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/zahnah/study-app/internal/config"
@@ -30,7 +31,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	return td
 }
 
-func Template(writer http.ResponseWriter, r http.Request, tmpl string, td *models.TemplateData) {
+func Template(writer http.ResponseWriter, r http.Request, tmpl string, td *models.TemplateData) error {
 
 	tc := app.TemplateCache
 	if !app.UseCache {
@@ -39,7 +40,8 @@ func Template(writer http.ResponseWriter, r http.Request, tmpl string, td *model
 
 	parseTemplate, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Couldn't get template for the page")
+		log.Println("Couldn't get template for the page")
+		return errors.New("couldn't get template for the page")
 	}
 
 	buf := new(bytes.Buffer)
@@ -50,8 +52,10 @@ func Template(writer http.ResponseWriter, r http.Request, tmpl string, td *model
 
 	if err != nil {
 		fmt.Println("error parsing template:", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
