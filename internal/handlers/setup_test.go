@@ -8,11 +8,13 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/justinas/nosurf"
 	"github.com/zahnah/study-app/internal/config"
+	"github.com/zahnah/study-app/internal/helpers"
 	"github.com/zahnah/study-app/internal/models"
 	"github.com/zahnah/study-app/internal/render"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -44,6 +46,12 @@ func getRoutes() http.Handler {
 
 	app.InProduction = false
 
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
@@ -64,6 +72,7 @@ func getRoutes() http.Handler {
 	NewHandlers(repo)
 
 	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 	return routes(&app)
 }
 
