@@ -17,3 +17,8 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+#Docker
+build.sh
+docker-compose.yml
+.env
