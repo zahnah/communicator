@@ -1,6 +1,9 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
@@ -24,10 +27,17 @@ var errorLog *log.Logger
 
 func main() {
 
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Unable to close database: %v\n", err)
+		}
+	}(db)
 
 	fmt.Println(fmt.Sprintf("Starting application on port: %s", portNumber))
 
@@ -39,7 +49,7 @@ func main() {
 	log.Fatalln(err)
 }
 
-func run() error {
+func run() (*sql.DB, error) {
 	gob.Register(models.Reservation{})
 
 	app.InProduction = false
@@ -61,16 +71,25 @@ func run() error {
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatalln("Can't create a template cache")
-		return err
+		return nil, err
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	log.Println("connection to database..")
+	os.LookupEnv("DATABASE_URL")
+	fmt.Println("db: ", os.Getenv("DATABASE_URL"))
+	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
 	helpers.NewHelpers(&app)
 
-	return nil
+	return db, nil
 }

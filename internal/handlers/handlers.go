@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"github.com/zahnah/study-app/internal/config"
@@ -8,6 +9,8 @@ import (
 	"github.com/zahnah/study-app/internal/helpers"
 	"github.com/zahnah/study-app/internal/models"
 	"github.com/zahnah/study-app/internal/render"
+	"github.com/zahnah/study-app/repository"
+	"github.com/zahnah/study-app/repository/dbrepo"
 	"net/http"
 )
 
@@ -15,11 +18,13 @@ var Repo *Repository
 
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
-func NewRepo(app *config.AppConfig) *Repository {
+func NewRepo(app *config.AppConfig, db *sql.DB) *Repository {
 	return &Repository{
 		App: app,
+		DB:  dbrepo.NewPostgresRepo(db, app),
 	}
 }
 
