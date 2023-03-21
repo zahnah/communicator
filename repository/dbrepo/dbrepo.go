@@ -6,11 +6,6 @@ import (
 	"github.com/zahnah/study-app/repository"
 )
 
-type postgresDbRepo struct {
-	App *config.AppConfig
-	DB  *sql.DB
-}
-
 func NewPostgresRepo(db *sql.DB, app *config.AppConfig) repository.DatabaseRepo {
 	return &postgresDbRepo{
 		App: app,
