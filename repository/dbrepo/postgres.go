@@ -65,7 +65,7 @@ values ($1, $2, $3, $4, $5, $6, $7) returning id`
 	return newID, err
 }
 
-func (m *postgresDbRepo) SearchAvailabilityByDates(start, end time.Time, roomID int) (int, error) {
+func (m *postgresDbRepo) SearchAvailabilityByRoomID(start, end time.Time, roomID int) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -83,4 +83,39 @@ where
 	).Scan(&numRows)
 
 	return numRows, err
+}
+
+func (m *postgresDbRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var rooms []models.Room
+	stmt := `
+select r.id, r.room_name, r.created_at, r.updated_at
+from rooms r
+where r.id in (
+	select distinct rr.room_id
+	from room_restrictions rr
+	where rr.start_date < $1 && rr.end_date > $2   
+)`
+	rows, err := m.DB.QueryContext(ctx, stmt,
+		start,
+		end,
+	)
+
+	if err != nil {
+		return rooms, err
+	}
+
+	for rows.Next() {
+		var room models.Room
+
+		err = rows.Scan(&room.ID, &room.RoomName, &room.CreatedAt, &room.UpdatedAt)
+		if err != nil {
+			return rooms, err
+		}
+		rooms = append(rooms, room)
+	}
+
+	return rooms, err
 }
