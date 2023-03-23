@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/go-chi/chi/v5"
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/forms"
 	"github.com/zahnah/study-app/internal/helpers"
@@ -61,10 +62,50 @@ func (m *Repository) SearchAvailability(writer http.ResponseWriter, r *http.Requ
 }
 
 func (m *Repository) PostAvailability(writer http.ResponseWriter, r *http.Request) {
-	_, _ = writer.Write([]byte("Post availability"))
-	start := r.Form.Get("start")
-	end := r.Form.Get("end")
-	_, _ = writer.Write([]byte(start + " - " + end))
+
+	sd := r.Form.Get("start")
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	ed := r.Form.Get("end")
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	rooms, err := m.DB.SearchAvailabilityForAllRooms(startDate, endDate)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	if len(rooms) == 0 {
+		m.App.Session.Put(r.Context(), "error", "No availability")
+		http.Redirect(writer, r, "/search-availability", http.StatusSeeOther)
+		return
+	} else {
+		for _, i := range rooms {
+			m.App.InfoLog.Println("ROOM", i.ID, i.RoomName)
+		}
+	}
+
+	data := make(map[string]interface{})
+	data["rooms"] = rooms
+
+	res := models.Reservation{
+		StartDate: startDate,
+		EndDate:   endDate,
+	}
+	m.App.Session.Put(r.Context(), "reservation", res)
+
+	_ = render.Template(writer, *r, "choose-room.page.gohtml", &models.TemplateData{
+		Data: data,
+	})
 }
 
 type jsonResponse struct {
@@ -195,4 +236,23 @@ func (m *Repository) ReservationSummary(writer http.ResponseWriter, r *http.Requ
 			Data: data,
 		})
 	}
+}
+
+func (m *Repository) ChooseRoom(writer http.ResponseWriter, request *http.Request) {
+	roomID, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	res, ok := m.App.Session.Get(request.Context(), "reservation").(models.Reservation)
+	if !ok {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	res.RoomID = roomID
+	m.App.Session.Put(request.Context(), "reservation", res)
+
+	http.Redirect(writer, request, "/make-reservation", http.StatusSeeOther)
 }

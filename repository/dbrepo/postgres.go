@@ -75,7 +75,7 @@ select count(1)
 from room_restrictions
 where
     room_id = $1
-    && start_date < $2 && end_date > $3`
+    AND start_date < $2 AND end_date > $3`
 	err := m.DB.QueryRowContext(ctx, stmt,
 		roomID,
 		start,
@@ -96,7 +96,7 @@ from rooms r
 where r.id in (
 	select distinct rr.room_id
 	from room_restrictions rr
-	where rr.start_date < $1 && rr.end_date > $2   
+	where rr.start_date < $1 AND rr.end_date > $2   
 )`
 	rows, err := m.DB.QueryContext(ctx, stmt,
 		start,
