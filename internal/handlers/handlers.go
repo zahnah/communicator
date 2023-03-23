@@ -130,13 +130,33 @@ func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Re
 	_, _ = writer.Write(out)
 }
 
-func (m *Repository) MakeReservation(writer http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
-	data["reservation"] = models.Reservation{}
+func (m *Repository) MakeReservation(writer http.ResponseWriter, request *http.Request) {
 
-	render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
+	res, ok := m.App.Session.Get(request.Context(), "reservation").(models.Reservation)
+	if !ok {
+		helpers.ServerError(writer, errors.New("cannot get reservation from session"))
+		return
+	}
+
+	sd := res.StartDate.Format("2006-01-02")
+	ed := res.EndDate.Format("2006-01-02")
+
+	room, err := m.DB.GetRoomById(res.RoomID)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+	res.Room = room
+
+	_ = render.Template(writer, *request, "make-reservation.page.gohtml", &models.TemplateData{
 		Form: forms.New(nil),
-		Data: data,
+		Data: map[string]interface{}{
+			"reservation": res,
+		},
+		StringMap: map[string]string{
+			"StartDate": sd,
+			"EndDate":   ed,
+		},
 	})
 }
 

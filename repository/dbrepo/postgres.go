@@ -119,3 +119,17 @@ where r.id in (
 
 	return rooms, err
 }
+
+func (m *postgresDbRepo) GetRoomById(roomID int) (models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var room models.Room
+	stmt := `
+select r.id, r.room_name, r.created_at, r.updated_at
+from rooms r
+where r.id = $1`
+	row := m.DB.QueryRowContext(ctx, stmt, roomID)
+	err := row.Scan(&room.ID, &room.RoomName, &room.CreatedAt, &room.UpdatedAt)
+	return room, err
+}
