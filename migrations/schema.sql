@@ -24,23 +24,21 @@ SET default_table_access_method = heap;
 -- Name: reservations; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.reservations
-(
-    id         integer                                              NOT NULL,
+CREATE TABLE public.reservations (
+    id integer NOT NULL,
     first_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    last_name  character varying(255) DEFAULT ''::character varying NOT NULL,
-    email      character varying(255)                               NOT NULL,
-    phone      character varying(255) DEFAULT ''::character varying NOT NULL,
-    start_date date                                                 NOT NULL,
-    end_date   date                                                 NOT NULL,
-    room_id    integer                                              NOT NULL,
-    created_at timestamp without time zone                          NOT NULL,
-    updated_at timestamp without time zone                          NOT NULL
+    last_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    email character varying(255) NOT NULL,
+    phone character varying(255) DEFAULT ''::character varying NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    room_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.reservations
-    OWNER TO study_app_user;
+ALTER TABLE public.reservations OWNER TO study_app_user;
 
 --
 -- Name: reservations_id_seq; Type: SEQUENCE; Schema: public; Owner: study_app_user
@@ -55,8 +53,7 @@ CREATE SEQUENCE public.reservations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.reservations_id_seq
-    OWNER TO study_app_user;
+ALTER TABLE public.reservations_id_seq OWNER TO study_app_user;
 
 --
 -- Name: reservations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: study_app_user
@@ -69,17 +66,15 @@ ALTER SEQUENCE public.reservations_id_seq OWNED BY public.reservations.id;
 -- Name: restrictions; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.restrictions
-(
-    id               integer                                              NOT NULL,
+CREATE TABLE public.restrictions (
+    id integer NOT NULL,
     restriction_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    created_at       timestamp without time zone                          NOT NULL,
-    updated_at       timestamp without time zone                          NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.restrictions
-    OWNER TO study_app_user;
+ALTER TABLE public.restrictions OWNER TO study_app_user;
 
 --
 -- Name: restrictions_id_seq; Type: SEQUENCE; Schema: public; Owner: study_app_user
@@ -94,8 +89,7 @@ CREATE SEQUENCE public.restrictions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.restrictions_id_seq
-    OWNER TO study_app_user;
+ALTER TABLE public.restrictions_id_seq OWNER TO study_app_user;
 
 --
 -- Name: restrictions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: study_app_user
@@ -108,21 +102,19 @@ ALTER SEQUENCE public.restrictions_id_seq OWNED BY public.restrictions.id;
 -- Name: room_restrictions; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.room_restrictions
-(
-    id             integer                     NOT NULL,
-    start_date     date                        NOT NULL,
-    end_date       date                        NOT NULL,
-    room_id        integer                     NOT NULL,
-    reservation_id integer                     NOT NULL,
-    restriction_id integer                     NOT NULL,
-    created_at     timestamp without time zone NOT NULL,
-    updated_at     timestamp without time zone NOT NULL
+CREATE TABLE public.room_restrictions (
+    id integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    room_id integer NOT NULL,
+    reservation_id integer NOT NULL,
+    restriction_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.room_restrictions
-    OWNER TO study_app_user;
+ALTER TABLE public.room_restrictions OWNER TO study_app_user;
 
 --
 -- Name: room_restrictions_id_seq; Type: SEQUENCE; Schema: public; Owner: study_app_user
@@ -137,8 +129,7 @@ CREATE SEQUENCE public.room_restrictions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.room_restrictions_id_seq
-    OWNER TO study_app_user;
+ALTER TABLE public.room_restrictions_id_seq OWNER TO study_app_user;
 
 --
 -- Name: room_restrictions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: study_app_user
@@ -151,17 +142,15 @@ ALTER SEQUENCE public.room_restrictions_id_seq OWNED BY public.room_restrictions
 -- Name: rooms; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.rooms
-(
-    id         integer                                              NOT NULL,
-    room_name  character varying(255) DEFAULT ''::character varying NOT NULL,
-    created_at timestamp without time zone                          NOT NULL,
-    updated_at timestamp without time zone                          NOT NULL
+CREATE TABLE public.rooms (
+    id integer NOT NULL,
+    room_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.rooms
-    OWNER TO study_app_user;
+ALTER TABLE public.rooms OWNER TO study_app_user;
 
 --
 -- Name: rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: study_app_user
@@ -176,8 +165,7 @@ CREATE SEQUENCE public.rooms_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rooms_id_seq
-    OWNER TO study_app_user;
+ALTER TABLE public.rooms_id_seq OWNER TO study_app_user;
 
 --
 -- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: study_app_user
@@ -190,34 +178,30 @@ ALTER SEQUENCE public.rooms_id_seq OWNED BY public.rooms.id;
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.schema_migration
-(
+CREATE TABLE public.schema_migration (
     version character varying(14) NOT NULL
 );
 
 
-ALTER TABLE public.schema_migration
-    OWNER TO study_app_user;
+ALTER TABLE public.schema_migration OWNER TO study_app_user;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: study_app_user
 --
 
-CREATE TABLE public.users
-(
-    id           integer                                              NOT NULL,
-    first_name   character varying(255) DEFAULT ''::character varying NOT NULL,
-    last_name    character varying(255) DEFAULT ''::character varying NOT NULL,
-    email        character varying(255)                               NOT NULL,
-    password     character varying(60)                                NOT NULL,
-    access_level integer                DEFAULT 1                     NOT NULL,
-    created_at   timestamp without time zone                          NOT NULL,
-    updated_at   timestamp without time zone                          NOT NULL
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    first_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    last_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    email character varying(255) NOT NULL,
+    password character varying(60) NOT NULL,
+    access_level integer DEFAULT 1 NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.users
-    OWNER TO study_app_user;
+ALTER TABLE public.users OWNER TO study_app_user;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: study_app_user
@@ -232,8 +216,7 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq
-    OWNER TO study_app_user;
+ALTER TABLE public.users_id_seq OWNER TO study_app_user;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: study_app_user
@@ -246,40 +229,35 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 -- Name: reservations id; Type: DEFAULT; Schema: public; Owner: study_app_user
 --
 
-ALTER TABLE ONLY public.reservations
-    ALTER COLUMN id SET DEFAULT nextval('public.reservations_id_seq'::regclass);
+ALTER TABLE ONLY public.reservations ALTER COLUMN id SET DEFAULT nextval('public.reservations_id_seq'::regclass);
 
 
 --
 -- Name: restrictions id; Type: DEFAULT; Schema: public; Owner: study_app_user
 --
 
-ALTER TABLE ONLY public.restrictions
-    ALTER COLUMN id SET DEFAULT nextval('public.restrictions_id_seq'::regclass);
+ALTER TABLE ONLY public.restrictions ALTER COLUMN id SET DEFAULT nextval('public.restrictions_id_seq'::regclass);
 
 
 --
 -- Name: room_restrictions id; Type: DEFAULT; Schema: public; Owner: study_app_user
 --
 
-ALTER TABLE ONLY public.room_restrictions
-    ALTER COLUMN id SET DEFAULT nextval('public.room_restrictions_id_seq'::regclass);
+ALTER TABLE ONLY public.room_restrictions ALTER COLUMN id SET DEFAULT nextval('public.room_restrictions_id_seq'::regclass);
 
 
 --
 -- Name: rooms id; Type: DEFAULT; Schema: public; Owner: study_app_user
 --
 
-ALTER TABLE ONLY public.rooms
-    ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
+ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
 
 
 --
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: study_app_user
 --
 
-ALTER TABLE ONLY public.users
-    ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
@@ -384,7 +362,7 @@ CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
 --
 
 ALTER TABLE ONLY public.reservations
-    ADD CONSTRAINT reservations_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms (id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT reservations_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -392,7 +370,7 @@ ALTER TABLE ONLY public.reservations
 --
 
 ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_reservations_id_fk FOREIGN KEY (reservation_id) REFERENCES public.reservations (id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT room_restrictions_reservations_id_fk FOREIGN KEY (reservation_id) REFERENCES public.reservations(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -400,7 +378,7 @@ ALTER TABLE ONLY public.room_restrictions
 --
 
 ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_restrictions_id_fk FOREIGN KEY (restriction_id) REFERENCES public.restrictions (id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT room_restrictions_restrictions_id_fk FOREIGN KEY (restriction_id) REFERENCES public.restrictions(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -408,7 +386,7 @@ ALTER TABLE ONLY public.room_restrictions
 --
 
 ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms (id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT room_restrictions_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

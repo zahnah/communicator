@@ -47,7 +47,11 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Generals(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "generals.page.gohtml", &models.TemplateData{})
+	render.Template(writer, *r, "generals.page.gohtml", &models.TemplateData{
+		IntMap: map[string]int{
+			"room_id": 1,
+		},
+	})
 }
 
 func (m *Repository) Contact(writer http.ResponseWriter, r *http.Request) {
@@ -55,7 +59,11 @@ func (m *Repository) Contact(writer http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Majors(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "majors.page.gohtml", &models.TemplateData{})
+	render.Template(writer, *r, "majors.page.gohtml", &models.TemplateData{
+		IntMap: map[string]int{
+			"room_id": 2,
+		},
+	})
 }
 
 func (m *Repository) SearchAvailability(writer http.ResponseWriter, r *http.Request) {
