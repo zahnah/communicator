@@ -12,16 +12,15 @@
 
                 <form action="/make-reservation" method="post">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                    <input type="hidden" name="room_id" value="{{$res.RoomID}}">
-                    <input value="{{index .StringMap "StartDate"}}" name="start_date" type="hidden">
-                    <input value="{{index .StringMap "EndDate"}}" name="end_date" type="hidden">
 
                     <div class="mb-3">
                         <label for="firstName" class="form-label">First name</label>
                         {{with .Form.Errors.Get "first_name"}}
-                        <label class="text-danger">{{.}}</label>
+                            <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{$res.FirstName}}" name="first_name" type="text" class="{{with .Form.Errors.Get "first_name"}}is-invalid{{end}} form-control" id="firstName" aria-describedby="emailHelp">
+                        <input value="{{$res.FirstName}}" name="first_name" type="text"
+                               class="{{with .Form.Errors.Get "first_name"}}is-invalid{{end}} form-control"
+                               id="firstName" aria-describedby="emailHelp">
                         <div id="firstNameHelp" class="form-text"></div>
                     </div>
 
@@ -30,7 +29,9 @@
                         {{with .Form.Errors.Get "last_name"}}
                             <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{$res.LastName}}" name="last_name" type="text" class="{{with .Form.Errors.Get "last_name"}}is-invalid{{end}} form-control" id="lastName" aria-describedby="emailHelp">
+                        <input value="{{$res.LastName}}" name="last_name" type="text"
+                               class="{{with .Form.Errors.Get "last_name"}}is-invalid{{end}} form-control" id="lastName"
+                               aria-describedby="emailHelp">
                         <div id="lastNameHelp" class="form-text"></div>
                     </div>
 
@@ -39,7 +40,9 @@
                         {{with .Form.Errors.Get "start_date"}}
                             <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{index .StringMap "StartDate"}}" type="date" disabled class="{{with .Form.Errors.Get "start_date"}}is-invalid{{end}} form-control" id="startDate">
+                        <input value="{{index .StringMap "StartDate"}}" type="date" disabled
+                               class="{{with .Form.Errors.Get "start_date"}}is-invalid{{end}} form-control"
+                               id="startDate">
                         <div id="startDateHelp" class="form-text"></div>
                     </div>
 
@@ -48,7 +51,8 @@
                         {{with .Form.Errors.Get "end_date"}}
                             <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{index .StringMap "EndDate"}}" type="date" disabled class="{{with .Form.Errors.Get "end_date"}}is-invalid{{end}} form-control" id="endDate">
+                        <input value="{{index .StringMap "EndDate"}}" type="date" disabled
+                               class="{{with .Form.Errors.Get "end_date"}}is-invalid{{end}} form-control" id="endDate">
                         <div id="endDateHelp" class="form-text"></div>
                     </div>
 
@@ -57,7 +61,9 @@
                         {{with .Form.Errors.Get "email"}}
                             <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{$res.Email}}" name="email"  type="email" class="{{with .Form.Errors.Get "email"}}is-invalid{{end}} form-control" id="email" aria-describedby="emailHelp">
+                        <input value="{{$res.Email}}" name="email" type="email"
+                               class="{{with .Form.Errors.Get "email"}}is-invalid{{end}} form-control" id="email"
+                               aria-describedby="emailHelp">
                         <div id="emailHelp" class="form-text"></div>
                     </div>
 
@@ -66,7 +72,9 @@
                         {{with .Form.Errors.Get "phone"}}
                             <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <input value="{{$res.Phone}}" name="phone" type="text" class="{{with .Form.Errors.Get "phone"}}is-invalid{{end}} form-control" id="phone" aria-describedby="emailHelp">
+                        <input value="{{$res.Phone}}" name="phone" type="text"
+                               class="{{with .Form.Errors.Get "phone"}}is-invalid{{end}} form-control" id="phone"
+                               aria-describedby="emailHelp">
                         <div id="phoneHelp" class="form-text"></div>
                     </div>
 

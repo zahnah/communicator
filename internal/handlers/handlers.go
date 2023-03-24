@@ -148,6 +148,8 @@ func (m *Repository) MakeReservation(writer http.ResponseWriter, request *http.R
 	}
 	res.Room = room
 
+	m.App.Session.Put(request.Context(), "reservation", res)
+
 	_ = render.Template(writer, *request, "make-reservation.page.gohtml", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: map[string]interface{}{
@@ -161,42 +163,23 @@ func (m *Repository) MakeReservation(writer http.ResponseWriter, request *http.R
 }
 
 func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Request) {
+
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		helpers.ServerError(writer, errors.New("cannot get reservation from session"))
+		return
+	}
+
 	err := r.ParseForm()
 	if err != nil {
 		helpers.ServerError(writer, err)
 		return
 	}
 
-	sd := r.Form.Get("start_date")
-	ed := r.Form.Get("end_date")
-	// 01/02 03:04:05PM '06 -0700
-	layout := "2006-01-02"
-	startDate, err := time.Parse(layout, sd)
-	if err != nil {
-		helpers.ServerError(writer, err)
-		return
-	}
-	endDate, err := time.Parse(layout, ed)
-	if err != nil {
-		helpers.ServerError(writer, err)
-		return
-	}
-
-	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
-	if err != nil {
-		helpers.ServerError(writer, err)
-		return
-	}
-
-	reservation := models.Reservation{
-		FirstName: r.Form.Get("first_name"),
-		LastName:  r.Form.Get("last_name"),
-		Email:     r.Form.Get("email"),
-		Phone:     r.Form.Get("phone"),
-		StartDate: startDate,
-		EndDate:   endDate,
-		RoomID:    roomID,
-	}
+	reservation.FirstName = r.Form.Get("first_name")
+	reservation.LastName = r.Form.Get("last_name")
+	reservation.Email = r.Form.Get("email")
+	reservation.Phone = r.Form.Get("phone")
 
 	form := forms.New(r.PostForm)
 	data := make(map[string]interface{})
@@ -218,13 +201,14 @@ func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Req
 			helpers.ServerError(writer, err)
 			return
 		}
+		reservation.ID = newID
 
 		restriction := models.RoomRestriction{
 			RestrictionID: 1,
 			ReservationID: newID,
-			RoomID:        roomID,
-			StartDate:     startDate,
-			EndDate:       endDate,
+			RoomID:        reservation.RoomID,
+			StartDate:     reservation.StartDate,
+			EndDate:       reservation.EndDate,
 		}
 
 		_, err = m.DB.InsertRoomRestriction(restriction)
@@ -249,11 +233,18 @@ func (m *Repository) ReservationSummary(writer http.ResponseWriter, r *http.Requ
 	} else {
 		m.App.Session.Remove(r.Context(), "reservation")
 
-		data := make(map[string]interface{})
-		data["reservation"] = reservation
+		sd := reservation.StartDate.Format("2006-01-02")
+		ed := reservation.EndDate.Format("2006-01-02")
 
 		render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
-			Data: data,
+			Form: forms.New(nil),
+			Data: map[string]interface{}{
+				"reservation": reservation,
+			},
+			StringMap: map[string]string{
+				"StartDate": sd,
+				"EndDate":   ed,
+			},
 		})
 	}
 }

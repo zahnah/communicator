@@ -8,5 +8,6 @@ This is the repository for my bookings and reservations project.
 - Uses [nosurf](https://github.com/justinas/nosurf)
 
 Migration commands:
+
 - soda generate fizz %MigrationName%
 - soda migrate
