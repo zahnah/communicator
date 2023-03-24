@@ -60,7 +60,11 @@
                 })
                 .then((data) => {
                     console.log(data);
-                    alert(data.message);
+                    if(confirm(data.message)) {
+                        location.href = '/book-room?id=' + data.room_id
+                            + '&start_date=' + data.start_date
+                            + '&end_date=' + data.end_date
+                    }
                     // do something with response data
                 })
                 .catch((error) => {

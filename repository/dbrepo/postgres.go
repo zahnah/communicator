@@ -65,7 +65,7 @@ values ($1, $2, $3, $4, $5, $6, $7) returning id`
 	return newID, err
 }
 
-func (m *postgresDbRepo) SearchAvailabilityByRoomID(start, end time.Time, roomID int) (int, error) {
+func (m *postgresDbRepo) SearchAvailabilityByRoomID(start, end time.Time, roomID int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -75,14 +75,14 @@ select count(1)
 from room_restrictions
 where
     room_id = $1
-    AND start_date < $2 AND end_date > $3`
+    AND start_date < $2 AND end_date > $3 limit 1`
 	err := m.DB.QueryRowContext(ctx, stmt,
 		roomID,
 		start,
 		end,
 	).Scan(&numRows)
 
-	return numRows, err
+	return numRows == 0, err
 }
 
 func (m *postgresDbRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]models.Room, error) {

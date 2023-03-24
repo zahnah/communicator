@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/forms"
@@ -13,6 +12,7 @@ import (
 	"github.com/zahnah/study-app/internal/render"
 	"github.com/zahnah/study-app/repository"
 	"github.com/zahnah/study-app/repository/dbrepo"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -110,8 +110,11 @@ func (m *Repository) PostAvailability(writer http.ResponseWriter, r *http.Reques
 }
 
 type jsonResponse struct {
-	OK      bool   `json:"ok"`
-	Message string `json:"message"`
+	OK        bool   `json:"ok"`
+	Message   string `json:"message"`
+	RoomID    int    `json:"room_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Request) {
@@ -130,8 +133,14 @@ func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Re
 	available, _ := m.DB.SearchAvailabilityByRoomID(startDate, endDate, roomID)
 
 	resp := jsonResponse{
-		OK:      available == 1,
-		Message: fmt.Sprintf("Available %d room(s)", available),
+		OK:        available,
+		Message:   "Available! Do you want to make a reservation?",
+		RoomID:    roomID,
+		StartDate: sd,
+		EndDate:   ed,
+	}
+	if !available {
+		resp.Message = "Not Available"
 	}
 
 	out, err := json.MarshalIndent(resp, "", "     ")
@@ -280,4 +289,26 @@ func (m *Repository) ChooseRoom(writer http.ResponseWriter, request *http.Reques
 	m.App.Session.Put(request.Context(), "reservation", res)
 
 	http.Redirect(writer, request, "/make-reservation", http.StatusSeeOther)
+}
+
+func (m *Repository) BookRoom(writer http.ResponseWriter, request *http.Request) {
+	roomID, _ := strconv.Atoi(request.URL.Query().Get("id"))
+	startDate := request.URL.Query().Get("start_date")
+	endDate := request.URL.Query().Get("end_date")
+
+	log.Println(roomID, startDate, endDate)
+
+	sd, _ := time.Parse("2006-01-02", startDate)
+	ed, _ := time.Parse("2006-01-02", endDate)
+
+	var res = models.Reservation{
+		StartDate: sd,
+		EndDate:   ed,
+		RoomID:    roomID,
+	}
+
+	m.App.Session.Put(request.Context(), "reservation", res)
+
+	http.Redirect(writer, request, "/make-reservation", http.StatusTemporaryRedirect)
+	return
 }
