@@ -6,6 +6,7 @@
                 <h1 class="h3">Search availability</h1>
                 <form id="availability-form" action="/search-availability" method="post">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="room_id" value="1">
                     <div class="row">
                         <div class="col col-md-6">
                             <div class="mb-3">
@@ -59,6 +60,7 @@
                 })
                 .then((data) => {
                     console.log(data);
+                    alert(data.message);
                     // do something with response data
                 })
                 .catch((error) => {

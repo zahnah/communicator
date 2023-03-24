@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/forms"
@@ -114,13 +115,26 @@ type jsonResponse struct {
 }
 
 func (m *Repository) PostAvailabilityJSON(writer http.ResponseWriter, r *http.Request) {
+	sd := r.Form.Get("start")
+	ed := r.Form.Get("end")
+	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	layout := "2006-01-02"
+	startDate, _ := time.Parse(layout, sd)
+	endDate, _ := time.Parse(layout, ed)
+
+	available, _ := m.DB.SearchAvailabilityByRoomID(startDate, endDate, roomID)
+
 	resp := jsonResponse{
-		OK:      true,
-		Message: "Available!",
+		OK:      available == 1,
+		Message: fmt.Sprintf("Available %d room(s)", available),
 	}
 
 	out, err := json.MarshalIndent(resp, "", "     ")
-
 	if err != nil {
 		helpers.ServerError(writer, err)
 		return
