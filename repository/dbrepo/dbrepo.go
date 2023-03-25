@@ -6,6 +6,11 @@ import (
 	"github.com/zahnah/study-app/repository"
 )
 
+func NewTestRepo(app *config.AppConfig) repository.DatabaseRepo {
+	return &testDbRepo{
+		App: app,
+	}
+}
 func NewPostgresRepo(db *sql.DB, app *config.AppConfig) repository.DatabaseRepo {
 	return &postgresDbRepo{
 		App: app,

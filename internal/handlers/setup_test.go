@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 )
 
@@ -39,6 +40,40 @@ func NoServe(next http.Handler) http.Handler {
 
 func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
+}
+
+func TestMain(m *testing.M) {
+	gob.Register(models.Reservation{})
+
+	app.InProduction = false
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.Session = session
+
+	tc, err := CreateTestTemplateCache()
+	if err != nil {
+		log.Fatalln("Can't create a template cache")
+	}
+
+	app.TemplateCache = tc
+	app.UseCache = true
+
+	repo := NewTestRepo(&app)
+	NewHandlers(repo)
+
+	render.NewRenderer(&app)
+	os.Exit(m.Run())
 }
 
 func getRoutes() http.Handler {
@@ -68,7 +103,7 @@ func getRoutes() http.Handler {
 	app.TemplateCache = tc
 	app.UseCache = true
 
-	repo := NewRepo(&app)
+	repo := NewTestRepo(&app)
 	NewHandlers(repo)
 
 	render.NewRenderer(&app)
