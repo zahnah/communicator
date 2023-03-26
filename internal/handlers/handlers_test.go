@@ -251,8 +251,8 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 
 	handler = http.HandlerFunc(Repo.PostMakeReservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusSeeOther {
-		t.Errorf("Reservation handler returned wrong response code: got %d, wanted %d", rr.Code, http.StatusSeeOther)
+	if rr.Code != http.StatusOK {
+		t.Errorf("Reservation handler returned wrong response code: got %d, wanted %d", rr.Code, http.StatusOK)
 	}
 
 	// cannot save reservation

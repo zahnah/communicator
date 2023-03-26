@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/forms"
@@ -254,8 +255,7 @@ func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Req
 	form.IsEmail("email")
 
 	if !form.Valid() {
-		http.Error(writer, "my own error message", http.StatusSeeOther)
-		render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
+		_ = render.Template(writer, *r, "make-reservation.page.gohtml", &models.TemplateData{
 			Form: form,
 			Data: data,
 		})
@@ -283,6 +283,31 @@ func (m *Repository) PostMakeReservation(writer http.ResponseWriter, r *http.Req
 			http.Redirect(writer, r, "/", http.StatusTemporaryRedirect)
 			return
 		}
+
+		// sending email notification
+		htmlMessage := fmt.Sprintf(`<b>Reservation confirmation</b><br>
+Dear %s:, <br>
+This is confirm your reservation from %s to %s
+`, reservation.FirstName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+		msg := models.MailData{
+			To:       reservation.Email,
+			From:     "me@local.local",
+			Subject:  "Reservation Confirmation",
+			Content:  htmlMessage,
+			Template: "basic",
+		}
+		m.App.MailChan <- msg
+
+		htmlMessage = fmt.Sprintf(`<b>Reservation confirmation</b><br>
+A reservation has been made for %s from %s to %s
+`, reservation.Room.RoomName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+		msg = models.MailData{
+			To:      "owner@email.local",
+			From:    "me@local.local",
+			Subject: "Reservation Confirmation",
+			Content: htmlMessage,
+		}
+		m.App.MailChan <- msg
 
 		m.App.Session.Put(r.Context(), "flash", "Data stored successfully")
 		m.App.Session.Put(r.Context(), "reservation", reservation)

@@ -14,6 +14,12 @@ services:
       - ./.docker/postgresql/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+  mail:
+    image: mailhog/mailhog
+    container_name: dc-mail
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 #Docker Networks
 networks:

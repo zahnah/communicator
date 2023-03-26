@@ -38,6 +38,10 @@ func main() {
 			_, _ = fmt.Fprintf(os.Stderr, "Unable to close database: %v\n", err)
 		}
 	}(db)
+	defer close(app.MailChan)
+
+	fmt.Println("Starting mail listener...")
+	listenForMain()
 
 	fmt.Println(fmt.Sprintf("Starting application on port: %s", portNumber))
 
@@ -54,6 +58,9 @@ func run() (*sql.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	app.InProduction = false
 
