@@ -381,3 +381,23 @@ func (m *Repository) BookRoom(writer http.ResponseWriter, request *http.Request)
 	http.Redirect(writer, request, "/make-reservation", http.StatusTemporaryRedirect)
 	return
 }
+
+type LoginForm struct {
+	Email    string
+	Password string
+}
+
+func (m *Repository) Login(writer http.ResponseWriter, request *http.Request) {
+
+	var form = LoginForm{
+		Email:    "",
+		Password: "",
+	}
+
+	_ = render.Template(writer, *request, "login.page.gohtml", &models.TemplateData{
+		Data: map[string]interface{}{
+			"form": form,
+		},
+		Form: forms.New(request.PostForm),
+	})
+}
