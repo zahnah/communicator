@@ -13,6 +13,18 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) GetUserByID(id int) (models.User, error) {
+	return models.User{}, nil
+}
+
+func (t testDbRepo) UpdateUser(u models.User) error {
+	return nil
+}
+
+func (t testDbRepo) Authenticate(email, password string) (int, string, error) {
+	return 0, "", nil
+}
+
 func (t testDbRepo) AllUsers() bool {
 	return true
 }
