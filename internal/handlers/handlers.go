@@ -401,3 +401,44 @@ func (m *Repository) Login(writer http.ResponseWriter, request *http.Request) {
 		Form: forms.New(request.PostForm),
 	})
 }
+
+func (m *Repository) PostLogin(writer http.ResponseWriter, request *http.Request) {
+
+	// Renew the token because it's a good practice
+	_ = m.App.Session.RenewToken(request.Context())
+
+	err := request.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	form := forms.New(request.PostForm)
+	form.Required("email", "Password")
+
+	email := request.Form.Get("email")
+	password := request.Form.Get("password")
+
+	if !form.Valid() {
+
+		_ = render.Template(writer, *request, "login.page.gohtml", &models.TemplateData{
+			Data: map[string]interface{}{
+				"form": form,
+			},
+			Form: forms.New(request.PostForm),
+		})
+		return
+	} else {
+		id, _, err := m.DB.Authenticate(email, password)
+		if err != nil {
+			log.Println(err)
+			m.App.Session.Put(request.Context(), "error", "Invalid login credentials")
+			http.Redirect(writer, request, "/user/login", http.StatusSeeOther)
+			return
+		} else {
+			m.App.Session.Put(request.Context(), "user_id", id)
+			m.App.Session.Put(request.Context(), "flash", "Logged in successfully")
+			http.Redirect(writer, request, "/", http.StatusSeeOther)
+		}
+	}
+}
