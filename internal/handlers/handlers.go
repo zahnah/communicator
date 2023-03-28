@@ -414,22 +414,25 @@ func (m *Repository) PostLogin(writer http.ResponseWriter, request *http.Request
 	}
 
 	form := forms.New(request.PostForm)
-	form.Required("email", "Password")
+	form.Required("email", "password")
+	form.IsEmail("email")
 
-	email := request.Form.Get("email")
-	password := request.Form.Get("password")
+	formModel := LoginForm{
+		Email:    request.Form.Get("email"),
+		Password: request.Form.Get("password"),
+	}
 
 	if !form.Valid() {
 
 		_ = render.Template(writer, *request, "login.page.gohtml", &models.TemplateData{
 			Data: map[string]interface{}{
-				"form": form,
+				"form": formModel,
 			},
-			Form: forms.New(request.PostForm),
+			Form: form,
 		})
 		return
 	} else {
-		id, _, err := m.DB.Authenticate(email, password)
+		id, _, err := m.DB.Authenticate(formModel.Email, formModel.Password)
 		if err != nil {
 			log.Println(err)
 			m.App.Session.Put(request.Context(), "error", "Invalid login credentials")
