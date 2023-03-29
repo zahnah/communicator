@@ -445,3 +445,10 @@ func (m *Repository) PostLogin(writer http.ResponseWriter, request *http.Request
 		}
 	}
 }
+
+func (m *Repository) Logout(writer http.ResponseWriter, request *http.Request) {
+	_ = m.App.Session.Destroy(request.Context())
+	m.App.Session.RenewToken(request.Context())
+	m.App.Session.Put(request.Context(), "flash", "Logged out successfully")
+	http.Redirect(writer, request, "/", http.StatusSeeOther)
+}
