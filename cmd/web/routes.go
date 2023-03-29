@@ -36,7 +36,8 @@ func routes(app *config.AppConfig) http.Handler {
 	mux.Get("/reservation-summary", handlers.Repo.ReservationSummary)
 
 	mux.Route("/admin", func(r chi.Router) {
-		r.Use(Auth)
+		// temporary disable
+		// r.Use(Auth)
 		r.Get("/", handlers.Repo.AdminDashboard)
 	})
 
