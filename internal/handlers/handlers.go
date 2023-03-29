@@ -452,3 +452,7 @@ func (m *Repository) Logout(writer http.ResponseWriter, request *http.Request) {
 	m.App.Session.Put(request.Context(), "flash", "Logged out successfully")
 	http.Redirect(writer, request, "/", http.StatusSeeOther)
 }
+
+func (m *Repository) AdminDashboard(writer http.ResponseWriter, request *http.Request) {
+	render.Template(writer, *request, "admin-dashboard.page.gohtml", &models.TemplateData{})
+}
