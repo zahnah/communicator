@@ -46,16 +46,16 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "home.page.gohtml", &models.TemplateData{})
+	_ = render.Template(writer, *r, "home.page.gohtml", &models.TemplateData{})
 }
 
 // About is the about page handler
 func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "about.page.gohtml", &models.TemplateData{})
+	_ = render.Template(writer, *r, "about.page.gohtml", &models.TemplateData{})
 }
 
 func (m *Repository) Generals(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "generals.page.gohtml", &models.TemplateData{
+	_ = render.Template(writer, *r, "generals.page.gohtml", &models.TemplateData{
 		IntMap: map[string]int{
 			"room_id": 1,
 		},
@@ -63,11 +63,11 @@ func (m *Repository) Generals(writer http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Contact(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "contact.page.gohtml", &models.TemplateData{})
+	_ = render.Template(writer, *r, "contact.page.gohtml", &models.TemplateData{})
 }
 
 func (m *Repository) Majors(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "majors.page.gohtml", &models.TemplateData{
+	_ = render.Template(writer, *r, "majors.page.gohtml", &models.TemplateData{
 		IntMap: map[string]int{
 			"room_id": 2,
 		},
@@ -75,7 +75,7 @@ func (m *Repository) Majors(writer http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) SearchAvailability(writer http.ResponseWriter, r *http.Request) {
-	render.Template(writer, *r, "search-availability.page.gohtml", &models.TemplateData{})
+	_ = render.Template(writer, *r, "search-availability.page.gohtml", &models.TemplateData{})
 }
 
 func (m *Repository) PostAvailability(writer http.ResponseWriter, r *http.Request) {
@@ -328,7 +328,7 @@ func (m *Repository) ReservationSummary(writer http.ResponseWriter, r *http.Requ
 		sd := reservation.StartDate.Format("2006-01-02")
 		ed := reservation.EndDate.Format("2006-01-02")
 
-		render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
+		_ = render.Template(writer, *r, "reservation-summary.page.gohtml", &models.TemplateData{
 			Form: forms.New(nil),
 			Data: map[string]interface{}{
 				"reservation": reservation,
@@ -448,11 +448,23 @@ func (m *Repository) PostLogin(writer http.ResponseWriter, request *http.Request
 
 func (m *Repository) Logout(writer http.ResponseWriter, request *http.Request) {
 	_ = m.App.Session.Destroy(request.Context())
-	m.App.Session.RenewToken(request.Context())
+	_ = m.App.Session.RenewToken(request.Context())
 	m.App.Session.Put(request.Context(), "flash", "Logged out successfully")
 	http.Redirect(writer, request, "/", http.StatusSeeOther)
 }
 
 func (m *Repository) AdminDashboard(writer http.ResponseWriter, request *http.Request) {
-	render.Template(writer, *request, "admin-dashboard.page.gohtml", &models.TemplateData{})
+	_ = render.Template(writer, *request, "admin-dashboard.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) AdminReservations(writer http.ResponseWriter, request *http.Request) {
+	_ = render.Template(writer, *request, "admin-reservations.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) AdminReservationsNew(writer http.ResponseWriter, request *http.Request) {
+	_ = render.Template(writer, *request, "admin-reservations-new.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, request *http.Request) {
+	_ = render.Template(writer, *request, "admin-reservations-calendar.page.gohtml", &models.TemplateData{})
 }

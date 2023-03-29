@@ -3,12 +3,11 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/handlers"
 	"net/http"
 )
 
-func routes(app *config.AppConfig) http.Handler {
+func routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
@@ -39,6 +38,10 @@ func routes(app *config.AppConfig) http.Handler {
 		// temporary disable
 		// r.Use(Auth)
 		r.Get("/", handlers.Repo.AdminDashboard)
+		r.Get("/reservations", handlers.Repo.AdminReservations)
+		r.Get("/reservations/new", handlers.Repo.AdminReservationsNew)
+		r.Get("/reservations/calendar", handlers.Repo.AdminReservationsCalendar)
+
 	})
 
 	fileServer := http.FileServer(http.Dir("./static"))

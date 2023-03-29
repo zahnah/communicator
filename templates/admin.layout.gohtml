@@ -6,7 +6,7 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>RoyalUI Admin</title>
+        <title>Administration</title>
         <!-- plugins:css -->
         <link rel="stylesheet" href="/static/admin/vendors/ti-icons/css/themify-icons.css">
         <link rel="stylesheet" href="/static/admin/vendors/base/vendor.bundle.base.css">
@@ -194,11 +194,36 @@
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/dashboard">
+                        <a class="nav-link" href="/admin">
                             <i class="ti-shield menu-icon"></i>
                             <span class="menu-title">Dashboard</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                           aria-controls="ui-basic">
+                            <i class="ti-palette menu-icon"></i>
+                            <span class="menu-title">Reservations</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"><a class="nav-link"
+                                                        href="/admin/reservations">List</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link"
+                                                        href="/admin/reservations/new">New</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link"
+                                                        href="/admin/reservations/calendar">Calendar</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+
+
+
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
                            aria-controls="ui-basic">
