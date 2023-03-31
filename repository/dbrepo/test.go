@@ -13,6 +13,10 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) AllNewReservations() ([]models.Reservation, error) {
+	return make([]models.Reservation, 1), nil
+}
+
 func (t testDbRepo) AllReservations() ([]models.Reservation, error) {
 	return make([]models.Reservation, 1), nil
 }

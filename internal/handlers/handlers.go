@@ -472,7 +472,17 @@ func (m *Repository) AdminReservations(writer http.ResponseWriter, request *http
 }
 
 func (m *Repository) AdminReservationsNew(writer http.ResponseWriter, request *http.Request) {
-	_ = render.Template(writer, *request, "admin-reservations-new.page.gohtml", &models.TemplateData{})
+	reservations, err := m.DB.AllNewReservations()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	_ = render.Template(writer, *request, "admin-reservations-new.page.gohtml", &models.TemplateData{
+		Data: map[string]interface{}{
+			"reservations": reservations,
+		},
+	})
 }
 
 func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, request *http.Request) {
