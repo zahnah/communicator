@@ -2,5 +2,33 @@
 {{define "content"}}
 
     Reservations
-        
+    {{ $res := index .Data "reservations"}}
+
+    <table class="table table-striped table-hover">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Last Name</th>
+            <th>Room</th>
+            <th>Arrival</th>
+            <th>Departure</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range $res}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>
+                    <a href="/admin/reservations/{{.ID}}">
+                        {{.LastName}}
+                    </a>
+                </td>
+                <td>{{.Room.RoomName}}</td>
+                <td>{{humanDate .StartDate}}</td>
+                <td>{{humanDate .EndDate}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
 {{end}}

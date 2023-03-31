@@ -7,12 +7,67 @@ import (
 	"github.com/zahnah/study-app/internal/config"
 	"github.com/zahnah/study-app/internal/models"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"time"
 )
 
 type postgresDbRepo struct {
 	App *config.AppConfig
 	DB  *sql.DB
+}
+
+func (m *postgresDbRepo) AllReservations() ([]models.Reservation, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var reservations []models.Reservation
+
+	stmt := `
+select res.id, res.first_name, res.last_name,
+       res.email, res.phone, res.start_date, res.end_date, res.room_id,
+       res.created_at, res.updated_at,
+       r.id, r.room_name
+from reservations res
+left join rooms r on r.id = res.room_id
+`
+	rows, err := m.DB.QueryContext(ctx, stmt)
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	if err != nil {
+		return reservations, err
+	}
+
+	for rows.Next() {
+		var r models.Reservation
+		err := rows.Scan(
+			&r.ID, &r.FirstName, &r.LastName,
+			&r.Email,
+			&r.Phone,
+			&r.StartDate,
+			&r.EndDate,
+			&r.RoomID,
+			&r.CreatedAt,
+			&r.UpdatedAt,
+			&r.Room.ID,
+			&r.Room.RoomName,
+		)
+
+		if err != nil {
+			return reservations, err
+		}
+		reservations = append(reservations, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return reservations, err
+	}
+
+	return reservations, nil
 }
 
 func (m *postgresDbRepo) GetUserByID(id int) (models.User, error) {

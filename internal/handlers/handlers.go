@@ -458,7 +458,17 @@ func (m *Repository) AdminDashboard(writer http.ResponseWriter, request *http.Re
 }
 
 func (m *Repository) AdminReservations(writer http.ResponseWriter, request *http.Request) {
-	_ = render.Template(writer, *request, "admin-reservations.page.gohtml", &models.TemplateData{})
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	_ = render.Template(writer, *request, "admin-reservations.page.gohtml", &models.TemplateData{
+		Data: map[string]interface{}{
+			"reservations": reservations,
+		},
+	})
 }
 
 func (m *Repository) AdminReservationsNew(writer http.ResponseWriter, request *http.Request) {

@@ -13,6 +13,10 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) AllReservations() ([]models.Reservation, error) {
+	return make([]models.Reservation, 1), nil
+}
+
 func (t testDbRepo) GetUserByID(id int) (models.User, error) {
 	return models.User{}, nil
 }
