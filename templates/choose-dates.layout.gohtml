@@ -41,7 +41,6 @@
 
 {{block "js" .}}
     <script type="text/javascript">
-        console.log("HERE");
         const form = document.getElementById("availability-form");
         form.onsubmit = (ev) => {
             ev.preventDefault();
@@ -59,7 +58,6 @@
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     if(confirm(data.message)) {
                         location.href = '/book-room?id=' + data.room_id
                             + '&start_date=' + data.start_date

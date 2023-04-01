@@ -488,3 +488,28 @@ func (m *Repository) AdminReservationsNew(writer http.ResponseWriter, request *h
 func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, request *http.Request) {
 	_ = render.Template(writer, *request, "admin-reservations-calendar.page.gohtml", &models.TemplateData{})
 }
+
+func (m *Repository) AdminReservation(writer http.ResponseWriter, request *http.Request) {
+	reservationID, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+	src := chi.URLParam(request, "src")
+
+	reservation, err := m.DB.GetReservationByID(reservationID)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	_ = render.Template(writer, *request, "admin-reservation.page.gohtml", &models.TemplateData{
+		Data: map[string]interface{}{
+			"reservation": reservation,
+		},
+		StringMap: map[string]string{
+			"src": src,
+		},
+		Form: forms.New(nil),
+	})
+}

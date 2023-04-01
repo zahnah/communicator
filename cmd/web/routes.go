@@ -41,7 +41,7 @@ func routes() http.Handler {
 		r.Get("/reservations", handlers.Repo.AdminReservations)
 		r.Get("/reservations/new", handlers.Repo.AdminReservationsNew)
 		r.Get("/reservations/calendar", handlers.Repo.AdminReservationsCalendar)
-
+		r.Get("/reservations/{src}/{id}", handlers.Repo.AdminReservation)
 	})
 
 	fileServer := http.FileServer(http.Dir("./static"))

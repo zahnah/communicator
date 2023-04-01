@@ -16,6 +16,41 @@ type postgresDbRepo struct {
 	DB  *sql.DB
 }
 
+func (m *postgresDbRepo) GetReservationByID(id int) (models.Reservation, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+select res.id, res.first_name, res.last_name,
+       res.email, res.phone, res.start_date, res.end_date, res.room_id,
+       res.created_at, res.updated_at, res.processed,
+       r.id, r.room_name
+from reservations res
+left join rooms r on r.id = res.room_id
+where res.id = $1`
+	row := m.DB.QueryRowContext(ctx, stmt, id)
+
+	var r models.Reservation
+	err := row.Scan(
+		&r.ID, &r.FirstName, &r.LastName,
+		&r.Email,
+		&r.Phone,
+		&r.StartDate,
+		&r.EndDate,
+		&r.RoomID,
+		&r.CreatedAt,
+		&r.UpdatedAt,
+		&r.Processed,
+		&r.Room.ID,
+		&r.Room.RoomName,
+	)
+
+	if err != nil {
+		return r, err
+	}
+	return r, err
+}
+
 func (m *postgresDbRepo) AllNewReservations() ([]models.Reservation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

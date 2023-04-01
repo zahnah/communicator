@@ -1,0 +1,94 @@
+{{template "admin" .}}
+{{define "content"}}
+    <h1 class="h1">Reservation details</h1>
+    {{$src := index .StringMap "src"}}
+    {{$res := index .Data "reservation"}}
+
+    <table class="table table-striped">
+        <tbody>
+        <tr>
+            <td>Room</td>
+            <td>#{{$res.Room.ID}}, {{$res.Room.RoomName}}</td>
+        </tr>
+        <tr>
+            <td>Processed</td>
+            <td>{{$res.Processed}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <form action="/admin/reservations/{{$src}}/{{$res.ID}}" method="post">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First name</label>
+            {{with .Form.Errors.Get "first_name"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{$res.FirstName}}" name="first_name" type="text"
+                   class="{{with .Form.Errors.Get "first_name"}}is-invalid{{end}} form-control"
+                   id="firstName" aria-describedby="emailHelp">
+            <div id="firstNameHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last name</label>
+            {{with .Form.Errors.Get "last_name"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{$res.LastName}}" name="last_name" type="text"
+                   class="{{with .Form.Errors.Get "last_name"}}is-invalid{{end}} form-control" id="lastName"
+                   aria-describedby="emailHelp">
+            <div id="lastNameHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="startDate" class="form-label">Start date</label>
+            {{with .Form.Errors.Get "start_date"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{humanDate $res.StartDate}}" type="date" disabled
+                   class="{{with .Form.Errors.Get "start_date"}}is-invalid{{end}} form-control"
+                   id="startDate">
+            <div id="startDateHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="endDate" class="form-label">End date</label>
+            {{with .Form.Errors.Get "end_date"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{humanDate $res.EndDate}}" type="date" disabled
+                   class="{{with .Form.Errors.Get "end_date"}}is-invalid{{end}} form-control" id="endDate">
+            <div id="endDateHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            {{with .Form.Errors.Get "email"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{$res.Email}}" name="email" type="email"
+                   class="{{with .Form.Errors.Get "email"}}is-invalid{{end}} form-control" id="email"
+                   aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            {{with .Form.Errors.Get "phone"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input value="{{$res.Phone}}" name="phone" type="text"
+                   class="{{with .Form.Errors.Get "phone"}}is-invalid{{end}} form-control" id="phone"
+                   aria-describedby="emailHelp">
+            <div id="phoneHelp" class="form-text"></div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/admin/reservations/{{$src}}" class="btn btn-warning">Cancel</a>
+        </div>
+
+    </form>
+{{end}}
