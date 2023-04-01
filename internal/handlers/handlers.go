@@ -513,3 +513,39 @@ func (m *Repository) AdminReservation(writer http.ResponseWriter, request *http.
 		Form: forms.New(nil),
 	})
 }
+
+func (m *Repository) AdminPostReservation(writer http.ResponseWriter, request *http.Request) {
+
+	reservationID, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+	src := chi.URLParam(request, "src")
+
+	err = request.ParseForm()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	reservation, err := m.DB.GetReservationByID(reservationID)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	reservation.FirstName = request.Form.Get("first_name")
+	reservation.LastName = request.Form.Get("last_name")
+	reservation.Phone = request.Form.Get("phone")
+	reservation.Email = request.Form.Get("email")
+
+	err = m.DB.UpdateReservation(reservation)
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	m.App.Session.Put(request.Context(), "flash", "Updated successfully")
+	http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/%s", src), http.StatusSeeOther)
+}
