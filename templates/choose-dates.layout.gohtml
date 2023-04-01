@@ -39,36 +39,38 @@
     </div><!-- /.container -->
 {{end}}
 
-{{block "js" .}}
-    <script type="text/javascript">
-        const form = document.getElementById("availability-form");
-        form.onsubmit = (ev) => {
-            ev.preventDefault();
-            const data = new FormData(ev.target);
-            const url = "/search-availability-json";
+{{/*{{define "js" }}*/}}
+{{/*    <script type="text/javascript">*/}}
+{{/*        const form = document.getElementById("availability-form");*/}}
+{{/*        if (form) {*/}}
+{{/*            form.onsubmit = (ev) => {*/}}
+{{/*                ev.preventDefault();*/}}
+{{/*                const data = new FormData(ev.target);*/}}
+{{/*                const url = "/search-availability-json";*/}}
 
-            fetch(url, {
-                method: "POST",
-                body: data,
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    if(confirm(data.message)) {
-                        location.href = '/book-room?id=' + data.room_id
-                            + '&start_date=' + data.start_date
-                            + '&end_date=' + data.end_date
-                    }
-                    // do something with response data
-                })
-                .catch((error) => {
-                    console.error("There was a problem with the fetch operation:", error);
-                });
+{{/*                fetch(url, {*/}}
+{{/*                    method: "POST",*/}}
+{{/*                    body: data,*/}}
+{{/*                })*/}}
+{{/*                    .then((response) => {*/}}
+{{/*                        if (!response.ok) {*/}}
+{{/*                            throw new Error("Network response was not ok");*/}}
+{{/*                        }*/}}
+{{/*                        return response.json();*/}}
+{{/*                    })*/}}
+{{/*                    .then((data) => {*/}}
+{{/*                        if (confirm(data.message)) {*/}}
+{{/*                            location.href = '/book-room?id=' + data.room_id*/}}
+{{/*                                + '&start_date=' + data.start_date*/}}
+{{/*                                + '&end_date=' + data.end_date*/}}
+{{/*                        }*/}}
+{{/*                        // do something with response data*/}}
+{{/*                    })*/}}
+{{/*                    .catch((error) => {*/}}
+{{/*                        console.error("There was a problem with the fetch operation:", error);*/}}
+{{/*                    });*/}}
 
-        }
-    </script>
-{{end}}
+{{/*            }*/}}
+{{/*        }*/}}
+{{/*    </script>*/}}
+{{/*{{end}}*/}}

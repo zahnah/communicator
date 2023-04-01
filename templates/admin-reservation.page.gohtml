@@ -1,8 +1,9 @@
 {{template "admin" .}}
 {{define "content"}}
-    <h1 class="h1">Reservation details</h1>
     {{$src := index .StringMap "src"}}
     {{$res := index .Data "reservation"}}
+
+    <h1 class="h1">Reservation details</h1>
 
     <table class="table table-striped">
         <tbody>
@@ -88,7 +89,35 @@
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="/admin/reservations/{{$src}}" class="btn btn-warning">Cancel</a>
+            {{ if eq $res.Processed 0}}
+            <a href="#!/" onclick="onProcessed()" class="btn btn-danger">Processed</a>
+            {{ end }}
         </div>
 
     </form>
 {{end}}
+
+{{define "js" }}
+    {{$src := index .StringMap "src"}}
+    {{$res := index .Data "reservation"}}
+
+    <script type="text/javascript">
+        const onProcessed = () => {
+            if (confirm("Are you sure")) {
+                const data = new FormData();
+                data.append("csrf_token", "{{.CSRFToken}}")
+                fetch('/admin/reservations/{{$src}}/{{$res.ID}}/processed', {
+                    method: 'post',
+                    body: data
+                }).then(
+                    () => {
+                        location.href = "/admin/reservations/{{$src}}";
+                    }
+                ).catch(reason => {
+                    alert(reason)
+                })
+            }
+            return false
+        }
+    </script>
+{{ end }}

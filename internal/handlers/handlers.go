@@ -549,3 +549,20 @@ func (m *Repository) AdminPostReservation(writer http.ResponseWriter, request *h
 	m.App.Session.Put(request.Context(), "flash", "Updated successfully")
 	http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/%s", src), http.StatusSeeOther)
 }
+
+func (m *Repository) AdminProcessedReservation(writer http.ResponseWriter, request *http.Request) {
+	reservationID, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	err = m.DB.UpdateProcessedForReservations(reservationID, 1)
+
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	writer.WriteHeader(http.StatusNoContent)
+}

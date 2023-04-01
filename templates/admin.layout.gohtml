@@ -320,7 +320,7 @@
                             {{.}}
                         </div>
                     {{end}}
-                    
+
 
                     {{ block "content" .}}
 
@@ -362,6 +362,9 @@
     <!-- Custom js for this page-->
     <script src="/static/admin/js/dashboard.js"></script>
     <!-- End custom js for this page-->
+
+    {{block "js" .}}
+    {{end}}
     </body>
 
     </html>
