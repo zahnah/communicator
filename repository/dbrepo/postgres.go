@@ -16,6 +16,44 @@ type postgresDbRepo struct {
 	DB  *sql.DB
 }
 
+func (m *postgresDbRepo) UpdateProcessedForReservations(id, processed int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `update reservations set processed = $2 where id = $1`
+	_, err := m.DB.ExecContext(ctx, stmt, id, processed)
+	return err
+}
+
+func (m *postgresDbRepo) DeleteReservation(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `delete from reservations where id = $1`
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	return err
+}
+
+func (m *postgresDbRepo) UpdateReservation(r models.Reservation) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+update reservations
+set
+    first_name = $2, last_name = $3,
+    email = $4, phone = $5,
+    updated_at = $6
+where id = $1`
+	_, err := m.DB.ExecContext(ctx, stmt,
+		r.ID,
+		r.FirstName, r.LastName,
+		r.Email, r.Phone,
+		time.Now(),
+	)
+	return err
+}
+
 func (m *postgresDbRepo) GetReservationByID(id int) (models.Reservation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

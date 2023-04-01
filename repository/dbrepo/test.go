@@ -13,6 +13,18 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) UpdateProcessedForReservations(id, processed int) error {
+	return nil
+}
+
+func (t testDbRepo) DeleteReservation(id int) error {
+	return nil
+}
+
+func (t testDbRepo) UpdateReservation(r models.Reservation) error {
+	return nil
+}
+
 func (t testDbRepo) GetReservationByID(id int) (models.Reservation, error) {
 	return models.Reservation{}, nil
 }
