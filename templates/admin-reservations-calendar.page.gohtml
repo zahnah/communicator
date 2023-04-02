@@ -2,5 +2,21 @@
 {{define "content"}}
 
     Reservations Calendar
+
+        <div class="col-md-12">
+            <div class="text-center">
+                <h3 class="h3">{{index .StringMap "this_month"}} {{index .StringMap "this_month_year"}}</h3>
+            </div>
+
+            <div class="float-start">
+                <a class="btn btn-primary" href="/admin/reservations/calendar?y={{index .StringMap "last_month_year"}}&m={{index .StringMap "last_month"}}">&lt;&lt;</a>
+            </div>
+
+            <div class="float-end">
+                <a class="btn btn-primary" href="/admin/reservations/calendar?y={{index .StringMap "next_month_year"}}&m={{index .StringMap "next_month"}}">&gt;&gt;</a>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
         
 {{end}}

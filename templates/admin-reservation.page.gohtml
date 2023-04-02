@@ -87,11 +87,17 @@
         </div>
 
         <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a href="/admin/reservations/{{$src}}" class="btn btn-warning">Cancel</a>
-            {{ if eq $res.Processed 0}}
-            <a href="#!/" onclick="onProcessed()" class="btn btn-danger">Processed</a>
-            {{ end }}
+            <div class="float-start">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/admin/reservations/{{$src}}" class="btn btn-warning">Cancel</a>
+                {{ if eq $res.Processed 0}}
+                    <a href="#!/" onclick="onProcessed()" class="btn btn-danger">Processed</a>
+                {{ end }}
+            </div>
+            <div class="float-end">
+                <a href="#!/" onclick="onDelete()" class="btn btn-danger">Delete</a>
+            </div>
+            <div class="clearfix"></div>
         </div>
 
     </form>
@@ -107,6 +113,23 @@
                 const data = new FormData();
                 data.append("csrf_token", "{{.CSRFToken}}")
                 fetch('/admin/reservations/{{$src}}/{{$res.ID}}/processed', {
+                    method: 'post',
+                    body: data
+                }).then(
+                    () => {
+                        location.href = "/admin/reservations/{{$src}}";
+                    }
+                ).catch(reason => {
+                    alert(reason)
+                })
+            }
+            return false
+        }
+        const onDelete = () => {
+            if (confirm("Are you sure you want to delete this record?")) {
+                const data = new FormData();
+                data.append("csrf_token", "{{.CSRFToken}}")
+                fetch('/admin/reservations/{{$src}}/{{$res.ID}}/delete', {
                     method: 'post',
                     body: data
                 }).then(

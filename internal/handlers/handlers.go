@@ -486,7 +486,33 @@ func (m *Repository) AdminReservationsNew(writer http.ResponseWriter, request *h
 }
 
 func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, request *http.Request) {
-	_ = render.Template(writer, *request, "admin-reservations-calendar.page.gohtml", &models.TemplateData{})
+
+	now := time.Now()
+
+	if request.URL.Query().Get("y") != "" && request.URL.Query().Get("m") != "" {
+		year, _ := strconv.Atoi(request.URL.Query().Get("y"))
+		month, _ := strconv.Atoi(request.URL.Query().Get("m"))
+		now = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	}
+
+	next := now.AddDate(0, 1, 0)
+	last := now.AddDate(0, -1, 0)
+
+	nextMonth := next.Format("01")
+	nextMonthYear := next.Format("2006")
+	lastMonth := last.Format("01")
+	lastMonthYear := last.Format("2006")
+
+	_ = render.Template(writer, *request, "admin-reservations-calendar.page.gohtml", &models.TemplateData{
+		StringMap: map[string]string{
+			"next_month":      nextMonth,
+			"next_month_year": nextMonthYear,
+			"last_month":      lastMonth,
+			"last_month_year": lastMonthYear,
+			"this_month":      now.Format("01"),
+			"this_month_year": now.Format("2006"),
+		},
+	})
 }
 
 func (m *Repository) AdminReservation(writer http.ResponseWriter, request *http.Request) {
@@ -558,6 +584,23 @@ func (m *Repository) AdminProcessedReservation(writer http.ResponseWriter, reque
 	}
 
 	err = m.DB.UpdateProcessedForReservations(reservationID, 1)
+
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	writer.WriteHeader(http.StatusNoContent)
+}
+
+func (m *Repository) AdminDeleteReservation(writer http.ResponseWriter, request *http.Request) {
+	reservationID, err := strconv.Atoi(chi.URLParam(request, "id"))
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	err = m.DB.DeleteReservation(reservationID)
 
 	if err != nil {
 		helpers.ServerError(writer, err)
