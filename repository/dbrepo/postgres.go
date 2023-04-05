@@ -16,6 +16,97 @@ type postgresDbRepo struct {
 	DB  *sql.DB
 }
 
+func (m *postgresDbRepo) GetRestrictionsForRoomByDate(roomID int, startDate, endDate time.Time) ([]models.RoomRestriction, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var restrictions []models.RoomRestriction
+
+	stmt := `
+select rr.id, rr.room_id,
+       coalesce(rr.reservation_id, 0), rr.restriction_id,
+       rr.start_date, rr.end_date,
+       rr.created_at, rr.updated_at
+from room_restrictions rr
+where rr.room_id = $1 and rr.end_date >= $2 and rr.start_date <= $3
+`
+	rows, err := m.DB.QueryContext(ctx, stmt, roomID, startDate, endDate)
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	if err != nil {
+		return restrictions, err
+	}
+
+	for rows.Next() {
+		var r models.RoomRestriction
+		err := rows.Scan(
+			&r.ID, &r.RoomID,
+			&r.ReservationID, &r.RestrictionID,
+			&r.StartDate, &r.EndDate,
+			&r.CreatedAt, &r.UpdatedAt,
+		)
+
+		if err != nil {
+			return restrictions, err
+		}
+		restrictions = append(restrictions, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return restrictions, err
+	}
+
+	return restrictions, nil
+}
+
+func (m *postgresDbRepo) AllRooms() ([]models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var rooms []models.Room
+
+	stmt := `
+select r.id, r.room_name,
+       r.created_at, r.updated_at
+from rooms r
+`
+	rows, err := m.DB.QueryContext(ctx, stmt)
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	if err != nil {
+		return rooms, err
+	}
+
+	for rows.Next() {
+		var r models.Room
+		err := rows.Scan(
+			&r.ID, &r.RoomName,
+			&r.CreatedAt, &r.UpdatedAt,
+		)
+
+		if err != nil {
+			return rooms, err
+		}
+		rooms = append(rooms, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return rooms, err
+	}
+
+	return rooms, nil
+}
+
 func (m *postgresDbRepo) UpdateProcessedForReservations(id, processed int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

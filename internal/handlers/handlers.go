@@ -503,6 +503,57 @@ func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, reque
 	lastMonth := last.Format("01")
 	lastMonthYear := last.Format("2006")
 
+	currentYear, currentMonth, _ := now.Date()
+	currentLocation := now.Location()
+	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
+
+	intMap := make(map[string]int)
+	intMap["days_in_month"] = lastOfMonth.Day()
+
+	rooms, err := m.DB.AllRooms()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	data := map[string]interface{}{
+		"now":   now,
+		"rooms": rooms,
+	}
+
+	for _, room := range rooms {
+		reservationMap := make(map[string]int)
+		blockMap := make(map[string]int)
+
+		for d := firstOfMonth; d.After(lastOfMonth) == false; d = d.AddDate(0, 0, 1) {
+			reservationMap[d.Format("2006-01-02")] = 0
+			blockMap[d.Format("2006-01-02")] = 0
+			blockMap[d.Format("2006-01-02")] = 0
+		}
+
+		restrictions, err := m.DB.GetRestrictionsForRoomByDate(room.ID, firstOfMonth, lastOfMonth)
+		if err != nil {
+			helpers.ServerError(writer, err)
+			return
+		}
+
+		for _, restriction := range restrictions {
+			for d := restriction.StartDate; d.After(restriction.EndDate) == false; d = d.AddDate(0, 0, 1) {
+				if restriction.ReservationID > 0 {
+					reservationMap[d.Format("2006-01-02")] = restriction.ReservationID
+				} else {
+					blockMap[d.Format("2006-01-02")] = restriction.ID
+				}
+			}
+		}
+
+		data[fmt.Sprintf("reservation_map_%d", room.ID)] = reservationMap
+		data[fmt.Sprintf("block_map_%d", room.ID)] = blockMap
+
+		m.App.Session.Put(request.Context(), fmt.Sprintf("block_map_%d", room.ID), blockMap)
+	}
+
 	_ = render.Template(writer, *request, "admin-reservations-calendar.page.gohtml", &models.TemplateData{
 		StringMap: map[string]string{
 			"next_month":      nextMonth,
@@ -512,6 +563,8 @@ func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, reque
 			"this_month":      now.Format("01"),
 			"this_month_year": now.Format("2006"),
 		},
+		IntMap: intMap,
+		Data:   data,
 	})
 }
 

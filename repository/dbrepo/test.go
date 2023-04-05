@@ -13,6 +13,15 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) GetRestrictionsForRoomByDate(roomID int, startDate, rndDate time.Time) ([]models.RoomRestriction, error) {
+	var restrictions []models.RoomRestriction
+	return restrictions, nil
+}
+
+func (t testDbRepo) AllRooms() ([]models.Room, error) {
+	return make([]models.Room, 1), nil
+}
+
 func (t testDbRepo) UpdateProcessedForReservations(id, processed int) error {
 	return nil
 }
