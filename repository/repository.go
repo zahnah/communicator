@@ -39,4 +39,8 @@ type DatabaseRepo interface {
 	DeleteReservation(id int) error
 
 	AllRooms() ([]models.Room, error)
+
+	InsertBlockForRoom(id int, startDate time.Time) error
+
+	DeleteRoomRestriction(id int) error
 }

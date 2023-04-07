@@ -13,6 +13,14 @@ type testDbRepo struct {
 	DB  *sql.DB
 }
 
+func (t testDbRepo) InsertBlockForRoom(id int, startDate time.Time) error {
+	return nil
+}
+
+func (t testDbRepo) DeleteRoomRestriction(id int) error {
+	return nil
+}
+
 func (t testDbRepo) GetRestrictionsForRoomByDate(roomID int, startDate, rndDate time.Time) ([]models.RoomRestriction, error) {
 	var restrictions []models.RoomRestriction
 	return restrictions, nil

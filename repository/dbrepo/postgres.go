@@ -16,6 +16,37 @@ type postgresDbRepo struct {
 	DB  *sql.DB
 }
 
+func (m *postgresDbRepo) InsertBlockForRoom(id int, startDate time.Time) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+insert into room_restrictions (restriction_id, reservation_id, room_id,
+                               start_date, end_date,
+                               created_at, updated_at)
+values ($1, $2, $3, $4, $5, $6, $7)`
+	_, err := m.DB.ExecContext(ctx, stmt,
+		2,
+		nil,
+		id,
+		startDate,
+		startDate.AddDate(0, 0, 1),
+		time.Now(),
+		time.Now(),
+	)
+
+	return err
+}
+
+func (m *postgresDbRepo) DeleteRoomRestriction(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `delete from room_restrictions where id = $1`
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	return err
+}
+
 func (m *postgresDbRepo) GetRestrictionsForRoomByDate(roomID int, startDate, endDate time.Time) ([]models.RoomRestriction, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

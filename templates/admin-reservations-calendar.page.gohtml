@@ -25,46 +25,58 @@
 
         <div class="clearfix"></div>
 
-        {{ range $rooms}}
-            {{$roomID := .ID}}
-            {{$blocks := index $.Data (printf "block_map_%d" .ID)}}
-            {{$reservations := index $.Data (printf "reservation_map_%d" .ID)}}
-            <h4 class="h4 mb-1">{{.RoomName}}</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <tbody>
-                    <tr class="table-dark">
-                        {{range $index := iterate $dim}}
-                            <td class="text-center m-0 p-1">
-                                {{add $index 1}}
-                            </td>
-                        {{end}}
-                    </tr>
-                    <tr>
-                        {{range $index := iterate $dim}}
-                            <td class="text-center m-0 p-1">
-                            {{if gt (index $reservations (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))) 0}}
-                            <a href="/admin/reservations/cal/{{index $reservations (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}">
-                                <span class="text-danger">R</span>
-                            </a>
-                            {{else}}
-                                <input
-                                        {{if gt (index $blocks (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))) 0}}
-                                            checked
-                                            name="remove_block[{{$roomID}}][{{(printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}]"
-                                            value="{{index $blocks (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}"
-                                        {{ else }}
-                                            name="add_block[{{$roomID}}][{{(printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}]"
-                                        {{end}}
-                                        type="checkbox">
+        <form method="post" action="/admin/reservations/calendar">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <input type="hidden" name="y" value="{{$curYear}}">
+            <input type="hidden" name="m" value="{{$curMonth}}">
+
+            {{ range $rooms}}
+                {{$roomID := .ID}}
+                {{$blocks := index $.Data (printf "block_map_%d" .ID)}}
+                {{$reservations := index $.Data (printf "reservation_map_%d" .ID)}}
+                <h4 class="h4 mb-1">{{.RoomName}}</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <tbody>
+                        <tr class="table-dark">
+                            {{range $index := iterate $dim}}
+                                <td class="text-center m-0 p-1">
+                                    {{add $index 1}}
+                                </td>
                             {{end}}
-                            </td>
-                        {{end}}
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        {{ end }}
+                        </tr>
+                        <tr>
+                            {{range $index := iterate $dim}}
+                                <td class="text-center m-0 p-1">
+                                    {{if gt (index $reservations (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))) 0}}
+                                        <a href="/admin/reservations/cal/{{index $reservations (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}">
+                                            <span class="text-danger">R</span>
+                                        </a>
+                                    {{else}}
+                                        <input
+                                                {{if gt (index $blocks (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))) 0}}
+                                                    checked
+                                                    name="remove_block[{{$roomID}}][{{(printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}]"
+                                                    value="{{index $blocks (printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}"
+                                                {{ else }}
+                                                    name="add_block"
+                                                    value="{{$roomID}}:{{(printf "%s-%s-%02d" $curYear $curMonth (add $index 1))}}"
+                                                {{end}}
+                                                type="checkbox">
+                                    {{end}}
+                                </td>
+                            {{end}}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {{ end }}
+
+            <hr>
+
+            <input type="submit" class="btn-primary" value="Submit">
+
+        </form>
     </div>
 
 {{end}}

@@ -15,6 +15,7 @@ import (
 	"github.com/zahnah/study-app/repository/dbrepo"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -539,7 +540,7 @@ func (m *Repository) AdminReservationsCalendar(writer http.ResponseWriter, reque
 		}
 
 		for _, restriction := range restrictions {
-			for d := restriction.StartDate; d.After(restriction.EndDate) == false; d = d.AddDate(0, 0, 1) {
+			for d := restriction.StartDate; d.Before(restriction.EndDate) == true; d = d.AddDate(0, 0, 1) {
 				if restriction.ReservationID > 0 {
 					reservationMap[d.Format("2006-01-02")] = restriction.ReservationID
 				} else {
@@ -661,4 +662,64 @@ func (m *Repository) AdminDeleteReservation(writer http.ResponseWriter, request 
 	}
 
 	writer.WriteHeader(http.StatusNoContent)
+}
+
+func (m *Repository) AdminPostReservationsCalendar(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	year, _ := strconv.Atoi(request.Form.Get("y"))
+	month, _ := strconv.Atoi(request.Form.Get("m"))
+
+	rooms, err := m.DB.AllRooms()
+	if err != nil {
+		helpers.ServerError(writer, err)
+		return
+	}
+
+	form := forms.New(request.PostForm)
+
+	a := form.Get("add_block")
+	log.Println(a)
+	b := form.Get("remove_block")
+	log.Println(b)
+
+	for _, room := range rooms {
+
+		curMap := m.App.Session.Get(request.Context(), fmt.Sprintf("block_map_%d", room.ID)).(map[string]int)
+		for name, value := range curMap {
+			if val, ok := curMap[name]; ok {
+				if val > 0 {
+					if !form.Has(fmt.Sprintf("remove_block[%d][%s]", room.ID, name)) {
+						log.Println("would delete block", value)
+						err = m.DB.DeleteRoomRestriction(value)
+						if err != nil {
+							helpers.ServerError(writer, err)
+							return
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for name, value := range request.PostForm["add_block"] {
+		log.Println("name:", name, value)
+		re := regexp.MustCompile(`(\d*):(\d*-\d*-\d*)`)
+		match := re.FindStringSubmatch(value)
+		addID, _ := strconv.Atoi(match[1])
+		date, _ := time.Parse("2006-01-02", match[2])
+		log.Println(addID, date)
+		m.DB.InsertBlockForRoom(addID, date)
+		if err != nil {
+			helpers.ServerError(writer, err)
+			return
+		}
+	}
+
+	m.App.Session.Put(request.Context(), "flash", "Changes saved")
+	http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/calendar?y=%d&m=%02d", year, month), http.StatusSeeOther)
 }
