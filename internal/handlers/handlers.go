@@ -588,7 +588,9 @@ func (m *Repository) AdminReservation(writer http.ResponseWriter, request *http.
 			"reservation": reservation,
 		},
 		StringMap: map[string]string{
-			"src": src,
+			"src":   src,
+			"year":  request.URL.Query().Get("y"),
+			"month": request.URL.Query().Get("m"),
 		},
 		Form: forms.New(nil),
 	})
@@ -626,8 +628,16 @@ func (m *Repository) AdminPostReservation(writer http.ResponseWriter, request *h
 		return
 	}
 
+	year := request.Form.Get("year")
+	month := request.Form.Get("month")
+
 	m.App.Session.Put(request.Context(), "flash", "Updated successfully")
-	http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/%s", src), http.StatusSeeOther)
+
+	if year == "" {
+		http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/%s", src), http.StatusSeeOther)
+	} else {
+		http.Redirect(writer, request, fmt.Sprintf("/admin/reservations/calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
+	}
 }
 
 func (m *Repository) AdminProcessedReservation(writer http.ResponseWriter, request *http.Request) {

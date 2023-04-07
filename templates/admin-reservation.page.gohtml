@@ -2,6 +2,8 @@
 {{define "content"}}
     {{$src := index .StringMap "src"}}
     {{$res := index .Data "reservation"}}
+    {{$year := index .StringMap "year"}}
+    {{$month := index .StringMap "month"}}
 
     <h1 class="h1">Reservation details</h1>
 
@@ -20,6 +22,8 @@
 
     <form action="/admin/reservations/{{$src}}/{{$res.ID}}" method="post">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <input type="hidden" name="year" value="{{$year}}">
+        <input type="hidden" name="month" value="{{$month}}">
 
         <div class="mb-3">
             <label for="firstName" class="form-label">First name</label>
@@ -110,6 +114,8 @@
 {{define "js" }}
     {{$src := index .StringMap "src"}}
     {{$res := index .Data "reservation"}}
+    {{$year := index .StringMap "year"}}
+    {{$month := index .StringMap "month"}}
 
     <script type="text/javascript">
         const onProcessed = () => {
@@ -121,7 +127,11 @@
                     body: data
                 }).then(
                     () => {
+                        {{if eq $src "cal"}}
+                        location.href = "/admin/reservations/calendar?y={{$year}}&m={{$month}}";
+                        {{else}}
                         location.href = "/admin/reservations/{{$src}}";
+                        {{end}}
                     }
                 ).catch(reason => {
                     alert(reason)
@@ -138,7 +148,11 @@
                     body: data
                 }).then(
                     () => {
+                        {{if eq $src "cal"}}
+                        location.href = "/admin/reservations/calendar?y={{$year}}&m={{$month}}";
+                        {{else}}
                         location.href = "/admin/reservations/{{$src}}";
+                        {{end}}
                     }
                 ).catch(reason => {
                     alert(reason)

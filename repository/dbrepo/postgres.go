@@ -442,10 +442,10 @@ func (m *postgresDbRepo) SearchAvailabilityByRoomID(start, end time.Time, roomID
 	var numRows int
 	stmt := `
 select count(1)
-from room_restrictions
+from room_restrictions rr
 where
-    room_id = $1
-    AND start_date < $2 AND end_date > $3 limit 1`
+    rr.room_id = $1
+    AND ((rr.start_date <= $2 AND rr.end_date > $2) OR (rr.start_date <= $3 AND rr.end_date > $3)) limit 1`
 	err := m.DB.QueryRowContext(ctx, stmt,
 		roomID,
 		start,
@@ -463,10 +463,10 @@ func (m *postgresDbRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 	stmt := `
 select r.id, r.room_name, r.created_at, r.updated_at
 from rooms r
-where r.id in (
+where r.id not in (
 	select distinct rr.room_id
 	from room_restrictions rr
-	where rr.start_date < $1 AND rr.end_date > $2   
+	where (rr.start_date <= $1 AND rr.end_date > $1) OR (rr.start_date <= $2 AND rr.end_date > $2)   
 )`
 	rows, err := m.DB.QueryContext(ctx, stmt,
 		start,
